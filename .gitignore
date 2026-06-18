@@ -1,0 +1,70 @@
+# ==========================================
+# Sekcja 1: NODE.JS & REACT (frontend)
+# ==========================================
+
+# Zależności (pobrane paczki)
+node_modules/
+jspm_packages/
+
+# Foldery budowania (produkcyjne)
+dist/
+build/
+out/
+
+# Logi błędów
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Pliki środowiskowe z sekretami (klucze API itp.)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Cache edytorów i systemowe
+.eslintcache
+.stylelintcache
+.vite
+
+
+# ==========================================
+# Sekcja 2: .NET & C# (backend)
+# ==========================================
+
+# Foldery kompilacji (generowane automatycznie)
+bin/
+obj/
+
+# Pliki użytkownika i konfiguracje lokalne IDE
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Cache i pliki diagnostyczne
+.vs/
+.vscode/
+# Uwaga: jeśli dzielisz konfigurację VS Code z zespołem, możesz usunąć .vscode/ z ignorowanych
+
+# Pliki baz danych (jeśli używasz np. SQLite lokalnie)
+*.db
+*.db-shm
+*.db-wal
+
+# Pliki spakowane i paczki NuGet
+*.nupkg
+packages/
+
+# Logi i raporty testowe
+TestResults/
+*.trx
+
+
+# ==========================================
+# Sekcja 3: Systemowe (Ogólne)
+# ==========================================
+.DS_Store
+Thumbs.db

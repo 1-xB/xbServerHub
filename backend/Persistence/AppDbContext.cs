@@ -1,9 +1,13 @@
-using System.Diagnostics;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Identity;
 
 namespace Persistence;
 
-public class AppDbContext(DbContextOptions options) : DbContext(options)
+public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
-    //public required DbSet<Activity> Activities { get; set; }
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
+    {
+    }
 }

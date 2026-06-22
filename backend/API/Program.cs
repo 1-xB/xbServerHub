@@ -47,6 +47,7 @@ builder.Services.AddCors(options =>
     });
 });
 
+
 builder.Services.AddScoped<IdentityDataSeeder>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();

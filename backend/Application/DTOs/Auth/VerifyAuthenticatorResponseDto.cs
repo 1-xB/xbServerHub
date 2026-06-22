@@ -1,9 +1,7 @@
 namespace Application.DTOs.Auth;
 
-public class LoginResponseDto
+public class VerifyAuthenticatorResponseDto
 {
     public bool IsSuccess { get; set; }
     public string Message { get; set; } = string.Empty;
-    public bool RequiresTwoFactor { get; set; } = false;
-    
 }

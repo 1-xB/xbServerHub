@@ -61,7 +61,6 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         
         if (result.IsLockedOut)
         {
-            _logger.LogWarning("User account locked");
             return new LoginResponseDto { IsSuccess = false, Message = "Account is temporarily locked. Please try again later." };
         }
         
@@ -73,12 +72,48 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         };
     }
 
+    public async Task<DisableAuthenticatorResponseDto> DisableAuthenticatorAsync(string userId)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            return new()
+            {
+                IsSuccess = false,
+                Message = "User not found"
+            };
+        }
+        
+        var disableResult = await userManager.SetTwoFactorEnabledAsync(user, false);
+        if (!disableResult.Succeeded)
+        {
+            _logger.LogWarning("Failed to disable 2FA for user {UserId}: {Errors}", userId,
+                string.Join(", ", disableResult.Errors.Select(e => e.Description)));
+            return new()
+            {
+                IsSuccess = false,
+                Message = "Failed to disable 2FA"
+            };
+        }
+        
+        _logger.LogInformation("2FA disabled successfully for user: {UserId}", userId);
+        return new()
+        {
+            IsSuccess = true,
+            Message = "2FA disabled successfully"
+        };
+    }
+
     public async Task<EnableAuthenticatorResponseDto> EnableAuthenticatorAsync(string userId)
     {
         var user = await userManager.FindByIdAsync(userId);
         if (user is null)
         {
-            throw new InvalidOperationException("user not found");
+            return new()
+            {
+                IsSuccess = false,
+                Message = "User not found"
+            };
         }
         
         var unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
@@ -90,7 +125,11 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
 
         if (string.IsNullOrWhiteSpace(unformattedKey))
         {
-            throw new InvalidOperationException("Failed to generate authenticator key.");
+            return new()
+            {
+                IsSuccess = false,
+                Message = "Failed to generate authenticator key."
+            };
         }
         
         var email = user.Email;
@@ -102,6 +141,8 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
 
         return new EnableAuthenticatorResponseDto
         {
+            IsSuccess = true,
+            Message = "Authenticator key generated successfully",
             SharedKey = unformattedKey,
             AuthenticatorUri = authenticatorUri
         };

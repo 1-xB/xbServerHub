@@ -44,6 +44,22 @@ public class AuthController(IAuthService authService)
         }
 
         var result = await authService.EnableAuthenticatorAsync(userId);
+        if (!result.IsSuccess) return BadRequest(result.Message);
+        return Ok(result);
+    }
+    
+    [Authorize]
+    [HttpPost("disable-authenticator")]
+    public async Task<IActionResult> DisableAuthenticator()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized("User identifier not found");
+        }
+
+        var result = await authService.DisableAuthenticatorAsync(userId);
+        if (!result.IsSuccess) return BadRequest(result.Message);
         return Ok(result);
     }
     

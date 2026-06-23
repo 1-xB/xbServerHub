@@ -32,7 +32,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = "xbServerHub_cookie";
     options.Cookie.HttpOnly = true; // JavaScript nie ma dostępu do ciasteczka
     options.Cookie.SameSite = SameSiteMode.Strict; // Ochrona przed CSRF
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Wymagane HTTPS
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // Użyj Strict
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // Czas życia sesji
 });
 
@@ -40,7 +40,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins(
+                "http://localhost:5173"   // Frontend HTTP 
+            )
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -54,7 +56,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseCors("FrontendPolicy");
 app.UseAuthentication();

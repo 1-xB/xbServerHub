@@ -7,14 +7,14 @@ using Persistence.Identity;
 
 namespace Persistence.Services;
 
-public class AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AuthService> _logger) : IAuthService
+public class AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AuthService> logger) : IAuthService
 {
     public async Task<LoginResponseDto> LoginAsync(LoginDto loginDto)
     {
         var user = await userManager.FindByEmailAsync(loginDto.Email);
         if (user is null)
         {
-            _logger.LogWarning("Login attempt failed: Email {Email} does not exist.", loginDto.Email);
+            logger.LogWarning("Login attempt failed: Email {Email} does not exist.", loginDto.Email);
             return new LoginResponseDto{IsSuccess = false, Message = "Incorrect email or password"};
         }
 
@@ -31,16 +31,16 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         
         if (result.IsLockedOut)
         {
-            _logger.LogWarning("User account locked: {Email}", loginDto.Email);
+            logger.LogWarning("User account locked: {Email}", loginDto.Email);
             return new LoginResponseDto { IsSuccess = false, Message = "Account is temporarily locked. Please try again later." };
         }
         
         if (!result.Succeeded)
         {
-            _logger.LogWarning("Invalid password attempt for user: {Email}", loginDto.Email);
+            logger.LogWarning("Invalid password attempt for user: {Email}", loginDto.Email);
             return new LoginResponseDto{IsSuccess = false, Message = "Incorrect email or password"};
         }
-        _logger.LogInformation("User {Email} logged in successfully.", loginDto.Email);
+        logger.LogInformation("User {Email} logged in successfully.", loginDto.Email);
         return new LoginResponseDto { IsSuccess = true, Message = "Login successful" };
     }
 
@@ -50,7 +50,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         var result = await signInManager.TwoFactorAuthenticatorSignInAsync(sanitizedCode, true, loginWithAuthenticatorDto.RememberDevice);
         if (result.Succeeded)
         {
-            _logger.LogInformation("User logged in with authenticator successfully.");
+            logger.LogInformation("User logged in with authenticator successfully.");
             return new()
             {
                 IsSuccess = true,
@@ -64,7 +64,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
             return new LoginResponseDto { IsSuccess = false, Message = "Account is temporarily locked. Please try again later." };
         }
         
-        _logger.LogWarning("Invalid authenticator code attempt.");
+        logger.LogWarning("Invalid authenticator code attempt.");
         return new()
         {
             IsSuccess = false,
@@ -87,7 +87,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         var disableResult = await userManager.SetTwoFactorEnabledAsync(user, false);
         if (!disableResult.Succeeded)
         {
-            _logger.LogWarning("Failed to disable 2FA for user {UserId}: {Errors}", userId,
+            logger.LogWarning("Failed to disable 2FA for user {UserId}: {Errors}", userId,
                 string.Join(", ", disableResult.Errors.Select(e => e.Description)));
             return new()
             {
@@ -96,7 +96,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
             };
         }
         
-        _logger.LogInformation("2FA disabled successfully for user: {UserId}", userId);
+        logger.LogInformation("2FA disabled successfully for user: {UserId}", userId);
         return new()
         {
             IsSuccess = true,
@@ -165,7 +165,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
 
         if (!isValid)
         {
-            _logger.LogWarning("Invalid authenticator code for user: {UserId}", userId);
+            logger.LogWarning("Invalid authenticator code for user: {UserId}", userId);
             return new()
             {
                 IsSuccess = false,
@@ -176,7 +176,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         var enableResult = await userManager.SetTwoFactorEnabledAsync(user, true);
         if (!enableResult.Succeeded)
         {
-            _logger.LogWarning("Failed to enable 2FA for user {UserId}: {Errors}", userId,
+            logger.LogWarning("Failed to enable 2FA for user {UserId}: {Errors}", userId,
                 string.Join(", ", enableResult.Errors.Select(e => e.Description)));
             return new()
             {
@@ -185,11 +185,22 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
             };
         }
         
-        _logger.LogInformation("2FA enabled successfully for user: {UserId}", userId);
+        logger.LogInformation("2FA enabled successfully for user: {UserId}", userId);
         return new()
         {
             IsSuccess = true,
             Message = "2FA enabled successfully"
+        };
+    }
+
+    public async Task<LogoutResponseDto> LogoutAsync(string userId)
+    {
+        await signInManager.SignOutAsync();
+        logger.LogInformation("User {UserId} logged out successfully.", userId);
+        return new()
+        {
+            IsSuccess = true,
+            Message = "User successfully logged"
         };
     }
 }

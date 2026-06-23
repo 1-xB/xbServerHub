@@ -81,4 +81,15 @@ public class AuthController(IAuthService authService)
         var result = await authService.VerifyAuthenticatorAsync(userId, verifyAuthenticatorDto.Code);
         return Ok(result);
     }
+    
+    [Authorize]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        var userId  = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userId)) return Unauthorized("User identifier not found");
+        var result = await authService.LogoutAsync(userId);
+        if (!result.IsSuccess) return BadRequest(result.Message);
+        return Ok(result);
+    }
 }

@@ -32,8 +32,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = "xbServerHub_cookie";
     options.Cookie.HttpOnly = true; // JavaScript nie ma dostępu do ciasteczka
     options.Cookie.SameSite = SameSiteMode.Strict; // Ochrona przed CSRF
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // Użyj Strict
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // Czas życia sesji
+    options.SlidingExpiration = true; 
 });
 
 builder.Services.AddCors(options =>

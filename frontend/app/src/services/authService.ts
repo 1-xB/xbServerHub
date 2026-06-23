@@ -62,3 +62,7 @@ export const checkAuthStatus = async (): Promise<boolean> => {
         return false;
     }
 }
+
+export const logoutUser = async (): Promise<void> => {
+    await api.post("auth/logout");
+}

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { logoutUser } from '../services/authService'
 
 interface DashboardPageProps {
   setIsLoggedIn: (val: boolean) => void
@@ -7,6 +8,7 @@ interface DashboardPageProps {
 function DashboardPage({ setIsLoggedIn }: DashboardPageProps) {
     const navigate = useNavigate()
     const handleLogout = () => {
+        logoutUser()
         setIsLoggedIn(false)
         navigate("/auth")
     }

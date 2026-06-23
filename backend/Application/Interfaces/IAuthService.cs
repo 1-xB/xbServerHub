@@ -9,4 +9,5 @@ public interface IAuthService
     Task<DisableAuthenticatorResponseDto> DisableAuthenticatorAsync(string userId);
     Task<EnableAuthenticatorResponseDto> EnableAuthenticatorAsync(string userId);
     Task<VerifyAuthenticatorResponseDto> VerifyAuthenticatorAsync(string userId, string code);
+    Task<LogoutResponseDto> LogoutAsync(string userId);
 }

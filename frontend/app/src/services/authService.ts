@@ -9,7 +9,12 @@ export interface LoginDto {
 export interface AuthResult {
     isSuccess: boolean;
     message: string;
-    requiresTwoFactorAuth: boolean;
+    requiresTwoFactor: boolean;
+}
+
+export interface LoginWith2FADto {
+    code: string;
+    rememberDevice: boolean;
 }
 
 export const loginUser = async (credentials: LoginDto): Promise<AuthResult> => {
@@ -25,7 +30,25 @@ export const loginUser = async (credentials: LoginDto): Promise<AuthResult> => {
         return {
             isSuccess: false,
             message: errorMessage,
-            requiresTwoFactorAuth: false,
+            requiresTwoFactor: false,
+        };
+    }
+}
+
+export const loginWith2FA = async (data: LoginWith2FADto): Promise<AuthResult> => {
+    try {
+        const response = await api.post("auth/login-with-authenticator", data);
+        return response.data as AuthResult;
+    }
+    catch (error: unknown) {
+        let errorMessage = "An error occurred during 2FA login.";
+        if ((error as AxiosError)?.response?.data) {
+            errorMessage = (error as AxiosError).response!.data as string;
+        }
+        return {
+            isSuccess: false,
+            message: errorMessage,
+            requiresTwoFactor: false,
         };
     }
 }

@@ -52,3 +52,13 @@ export const loginWith2FA = async (data: LoginWith2FADto): Promise<AuthResult> =
         };
     }
 }
+
+export const checkAuthStatus = async (): Promise<boolean> => {
+    try {
+        await api.get("user/me");
+        return true;
+    }
+    catch {
+        return false;
+    }
+}

@@ -1,7 +1,10 @@
+using API.BackgroundServices;
+using Application.Handlers;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
+using Persistence.Glances;
 using Persistence.Identity;
 using Persistence.Services;
 
@@ -49,6 +52,17 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
+
+builder.Services.AddHttpClient<IGlancesClient, GlancesClient>(client =>
+    {
+        var baseUrl = builder.Configuration["Glances:BaseUrl"];
+        client.BaseAddress = new Uri(baseUrl);
+        client.Timeout = TimeSpan.FromSeconds(5);
+    });
+
+builder.Services.AddScoped(typeof(CollectSystemMetricsHandler));
+
+builder.Services.AddHostedService<GlancesMetricsBackgroundService>();
 
 
 builder.Services.AddScoped<IdentityDataSeeder>();

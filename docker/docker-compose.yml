@@ -18,6 +18,7 @@ services:
     image: nicolargo/glances:latest-full
     container_name: xb_glances
     pid: host
+    network_mode: host
     environment:
       - GLANCES_OPT=-w
     volumes:

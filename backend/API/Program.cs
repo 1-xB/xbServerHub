@@ -1,4 +1,5 @@
 using API.BackgroundServices;
+using API.Services;
 using Application.Handlers;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +12,7 @@ using Persistence.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -60,8 +62,9 @@ builder.Services.AddHttpClient<IGlancesClient, GlancesClient>(client =>
         client.Timeout = TimeSpan.FromSeconds(5);
     });
 
-builder.Services.AddScoped(typeof(CollectSystemMetricsHandler));
+builder.Services.AddScoped<IMetricsBroadcaster, SignalMetricsBroadcaster>();
 
+builder.Services.AddScoped(typeof(CollectSystemMetricsHandler));
 builder.Services.AddHostedService<GlancesMetricsBackgroundService>();
 
 

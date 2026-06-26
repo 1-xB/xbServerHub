@@ -1,4 +1,5 @@
 using API.BackgroundServices;
+using API.Hubs;
 using API.Services;
 using Application.Handlers;
 using Application.Interfaces;
@@ -42,18 +43,18 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true; 
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("FrontendPolicy", policy =>
-    {
-        policy.WithOrigins(
-                "http://localhost:5173"   // Frontend HTTP 
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
-});
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("FrontendPolicy", policy =>
+//     {
+//         policy.WithOrigins(
+//                 "http://localhost:5173"   // Frontend HTTP 
+//             )
+//             .AllowAnyHeader()
+//             .AllowAnyMethod()
+//             .AllowCredentials();
+//     });
+// });
 
 builder.Services.AddHttpClient<IGlancesClient, GlancesClient>(client =>
     {
@@ -79,11 +80,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-app.UseCors("FrontendPolicy");
+//app.UseCors("FrontendPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<MetricsHub>("/hubs/metrics");
 
 using (var scope = app.Services.CreateScope())
 {

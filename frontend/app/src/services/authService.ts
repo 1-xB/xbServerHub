@@ -19,7 +19,7 @@ export interface LoginWith2FADto {
 
 export const loginUser = async (credentials: LoginDto): Promise<AuthResult> => {
     try {
-        const response = await api.post("auth/login", credentials);
+        const response = await api.post("/api/auth/login", credentials);
         return response.data as AuthResult;
     }
     catch (error: unknown) {
@@ -37,7 +37,7 @@ export const loginUser = async (credentials: LoginDto): Promise<AuthResult> => {
 
 export const loginWith2FA = async (data: LoginWith2FADto): Promise<AuthResult> => {
     try {
-        const response = await api.post("auth/login-with-authenticator", data);
+        const response = await api.post("/api/auth/login-with-authenticator", data);
         return response.data as AuthResult;
     }
     catch (error: unknown) {
@@ -55,7 +55,7 @@ export const loginWith2FA = async (data: LoginWith2FADto): Promise<AuthResult> =
 
 export const checkAuthStatus = async (): Promise<boolean> => {
     try {
-        await api.get("user/me");
+        await api.get("/api/user/me");
         return true;
     }
     catch {
@@ -64,5 +64,5 @@ export const checkAuthStatus = async (): Promise<boolean> => {
 }
 
 export const logoutUser = async (): Promise<void> => {
-    await api.post("auth/logout");
+    await api.post("/api/auth/logout");
 }

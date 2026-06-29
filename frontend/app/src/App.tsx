@@ -4,6 +4,7 @@ import AuthPage from "./pages/AuthPage"
 import DashboardPage from "./pages/DashboardPage"
 import ProtectedRoute from "./components/ProtectedRoute"
 import { checkAuthStatus } from "./services/authService"
+import { startConnection, stopConnection } from "./services/signalService"
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -17,6 +18,15 @@ function App() {
     }
     verifyAuth()
   }, [])
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      startConnection()
+    }
+    else {
+      stopConnection()
+    }
+  }, [isLoggedIn]) // uruchamia się gdy zmieni się wartosc zmiennej isLoggedIn
 
   if (loading) {
     return <div>Loading...</div>
